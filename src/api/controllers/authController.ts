@@ -4,7 +4,6 @@ import { Request,Response } from "express"
 import {StatusCodes} from "http-status-codes"
 import Client from "../../db/models/client"
 import Artisan from "../../db/models/artisan"
-import artisan from "../../db/models/artisan"
 
 export const registerClient = async(req:Request,res:Response):Promise<any> =>{
     try {
@@ -29,7 +28,7 @@ export const registerClient = async(req:Request,res:Response):Promise<any> =>{
             mdp:hashMDP,
         })
         const savedClient = await newClient.save()
-        const token = jwt.sign({id:savedClient._id},"SECRETKEY",{expiresIn:"1h"})
+        const token = jwt.sign({idClient:savedClient._id},process.env.JWT_SECRET as string,{expiresIn:"30d"})
         res.status(StatusCodes.CREATED).json({
             success:true,
             client:{
@@ -61,7 +60,7 @@ export const loginClient = async(req:Request,res:Response):Promise<any>=>{
         if(!isValidPassword){
             return res.status(StatusCodes.UNAUTHORIZED).json({message:"Invalid credentials"})
         }
-        const token = jwt.sign({id:client._id},"SECRETKEY",{expiresIn:"1h"})
+        const token = jwt.sign({idClient:client._id},process.env.JWT_SECRET as string,{expiresIn:"30d"})
         res.status(StatusCodes.OK).json({
             success:true,
             client:{
@@ -98,7 +97,7 @@ export const registerArtisan = async(req:Request,res:Response):Promise<any> =>{
             domaine:domaine,
         })
         const savedArtisan = await newArtisan.save()
-        const token = jwt.sign({id:savedArtisan._id},"SECRETKEY",{expiresIn:"1h"})
+        const token = jwt.sign({idArtisan:savedArtisan._id},process.env.JWT_SECRET as string,{expiresIn:"30d"})
         res.status(StatusCodes.CREATED).json({
             success:true,
             artisan:{
@@ -131,7 +130,7 @@ export const loginArtisan = async(req:Request,res:Response):Promise<any>=>{
         if(!isValidPassword){
             return res.status(StatusCodes.UNAUTHORIZED).json({message:"Invalid credentials"})
         }
-        const token = jwt.sign({id:artisan._id},"SECRETKEY",{expiresIn:"1h"})
+        const token = jwt.sign({idArtisan:artisan._id},process.env.JWT_SECRET as string,{expiresIn:"30d"})
         res.status(StatusCodes.OK).json({
             success:true,
             artisan:{

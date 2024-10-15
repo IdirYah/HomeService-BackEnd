@@ -1,11 +1,11 @@
 import express from "express"
 import { loginArtisan, loginClient, registerArtisan, registerClient } from "../controllers/authController"
 
-const routes = express.Router()
+const authRoutes = express.Router()
 
-routes.post("/registerClient",registerClient)
-routes.post("/loginClient",loginClient)
-routes.post("/registerArtisan",registerArtisan)
-routes.post("/loginArtisan",loginArtisan)
+authRoutes.post("/registerClient",registerClient)
+authRoutes.post("/loginClient",loginClient)
+authRoutes.post("/registerArtisan",registerArtisan)
+authRoutes.post("/loginArtisan",loginArtisan)
 
-export default routes
+export default authRoutes
