@@ -52,7 +52,7 @@ export const updatePassword = async(req:Request,res:Response):Promise<any>=>{
         const {oldPassword,newPassword,confirmPassword} = req.body
         const idClient:string = req.user?.idClient as string
         if(!oldPassword || !newPassword || !confirmPassword){
-            return res.status(StatusCodes.BAD_REQUEST).json({message:"Please enter your credenials"})
+            return res.status(StatusCodes.BAD_REQUEST).json({message:"Please enter your credentials"})
         }
         if(!idClient){
             return res.status(StatusCodes.NOT_FOUND).json({message:"Client doesn't exists"})
