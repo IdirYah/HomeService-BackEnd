@@ -7,7 +7,6 @@ export interface IDemande{
     idArtisan:Types.ObjectId | IArtisan;
     description:string;
     titre:string;
-    adresse:string;
     annulation:boolean;
     isConfirmed:boolean;
     isUrgent:boolean;

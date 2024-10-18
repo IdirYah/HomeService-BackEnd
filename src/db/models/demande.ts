@@ -8,7 +8,6 @@ const demandeSchema = new Schema<IDemandeModel>({
     idArtisan:{type:Schema.Types.ObjectId,ref:"Artisan",required:true},
     description:{type:String,required:true},
     titre:{type:String,required:true},
-    adresse:{type:String,required:true},
     annulation:{type:Boolean,required:true,default:false},
     isConfirmed:{type:Boolean,required:true,default:false},
     isUrgent:{type:Boolean,required:true,default:false},
