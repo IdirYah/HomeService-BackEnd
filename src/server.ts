@@ -19,5 +19,5 @@ app.use('/api/client',clientRoutes)
 app.use('/api/artisan',artisanRoutes)
 
 app.listen(PORT,()=>{
-    console.log(`Server runnig on port ${PORT}`)
+    console.log(`Server running on port ${PORT}`)
 })
