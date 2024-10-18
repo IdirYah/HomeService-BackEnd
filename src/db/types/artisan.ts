@@ -6,5 +6,5 @@ export interface IArtisan extends IMembre{
     domaine:string;
     isActive:boolean;
     rating:number;
-    tablePrestation:Types.ObjectId[] | IPrestation[];
+    tablePrestation:IPrestation[];
 }

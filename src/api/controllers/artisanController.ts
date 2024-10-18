@@ -65,3 +65,35 @@ export const updatePassword = async(req:Request,res:Response):Promise<any>=>{
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message:"Internal server error"})
     }
 }
+
+export const addPrestation = async(req:Request,res:Response):Promise<any>=>{
+    try{
+        const {nomPrestation,maxPrix,minPrix} = req.body   
+        const idArtisan:string = req.artisan?.idArtisan as string
+        if(!nomPrestation || !maxPrix || !minPrix){
+            return res.status(StatusCodes.BAD_REQUEST).json({message:"Please enter your credentials"})
+        }
+        if(!idArtisan){
+            return res.status(StatusCodes.NOT_FOUND).json({message:"Artisan doesn't exists"})
+        }
+        const idArtisanObjet = new mongoose.Types.ObjectId(idArtisan)
+        if(!idArtisanObjet){
+            return res.status(StatusCodes.NOT_FOUND).json({message:"Artisan doesn't exists"})
+        }
+        const oldArtisan = await Artisan.findById(idArtisanObjet,)
+        if(!oldArtisan){
+            return res.status(StatusCodes.NOT_FOUND).json({message:"Artisan doesn't exists"})
+        }
+        const newPrestation = {
+            nomPrestation:nomPrestation as string,
+            prixMin:minPrix as number,
+            prixMax:maxPrix as number
+        }
+        oldArtisan.tablePrestation.push(newPrestation)
+        await oldArtisan.save()
+        res.status(StatusCodes.OK).json({message:"Prestation added successfully"})
+    }catch(error){
+        console.log("Il y a une erreur",error)
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message:"Internal server error"})
+    }
+}

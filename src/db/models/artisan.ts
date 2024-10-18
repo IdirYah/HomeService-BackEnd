@@ -4,13 +4,19 @@ import { membreSchema } from "./membre"
 
 interface IArtisanModel extends IArtisan,Document{}
 
+const prestationSchema = new Schema({
+    nomPrestation:{type:String,required:true},
+    prixMin:{type:Number,required:true},
+    prixMax:{type:Number,required:true},
+})
+
 const artisanSchema = new Schema<IArtisanModel>({
     ...membreSchema,
     domaine:{type:String,required:true},
     isActive:{type:Boolean,required:true,default:true},
     rating:{type:Number,required:true,default:5},
     tablePrestation:[{
-        type:Schema.Types.ObjectId,ref:"Prestation",default:[],
+        type:[prestationSchema],default:[],
     }]
 })
 

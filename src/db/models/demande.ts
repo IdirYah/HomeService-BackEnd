@@ -7,7 +7,7 @@ const demandeSchema = new Schema<IDemandeModel>({
     idClient:{type:Schema.Types.ObjectId,ref:"Client",required:true},
     idArtisan:{type:Schema.Types.ObjectId,ref:"Artisan",required:true},
     description:{type:String,required:true},
-    prestation:{type:Schema.Types.ObjectId,required:true},
+    titre:{type:String,required:true},
     adresse:{type:String,required:true},
     annulation:{type:Boolean,required:true,default:false},
     isConfirmed:{type:Boolean,required:true,default:false},
