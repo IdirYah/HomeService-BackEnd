@@ -5,6 +5,7 @@ import { StatusCodes } from "http-status-codes";
 import Artisan from "../../db/models/artisan";
 import Client from "../../db/models/client";
 import Demande from "../../db/models/demande";
+import dayjs from "dayjs";
 
 export const updateArtisan = async(req:Request,res:Response):Promise<any>=>{
     try {
@@ -110,7 +111,14 @@ export const getDemande = async(req:Request,res:Response):Promise<any>=>{
         if(!idArtisanObjet){
             return res.status(StatusCodes.NOT_FOUND).json({message:"Artisan doesn't exists"})
         }
-        const demandes = await Demande.find({idArtisan:idArtisanObjet},)
+        const currentDate = new Date()
+        const demandes = await Demande.find({
+            idArtisan: idArtisanObjet,
+            date: { $gt: currentDate }, 
+            annulation: false, 
+            isConfirmed: false, 
+            isCompleted: false 
+        })
         if(demandes.length === 0){
             return res.status(StatusCodes.NOT_FOUND).json({message:"No demande for this artisan"})
         }
@@ -145,6 +153,25 @@ export const getDemande = async(req:Request,res:Response):Promise<any>=>{
         res.status(StatusCodes.OK).json(demandesModifiees)
     }catch(error){
         console.log("Il y a une erreur",error)
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message:"Internal server error"})
+    }
+}
+
+export const confirmDemande = async(req:Request,res:Response):Promise<any>=>{
+    try{
+        const {idDemande} = req.body
+        if(!idDemande){
+            return res.status(StatusCodes.BAD_REQUEST).json({mesage:"Please enter your credentials"})
+        }
+        const oldDemande = await Demande.findById(idDemande)
+        if(!oldDemande){
+            return res.status(StatusCodes.NOT_FOUND).json({message:"Demande doesn't exists"})
+        }
+        oldDemande.isConfirmed = true
+        await oldDemande.save()
+        res.status(StatusCodes.OK).json({message:"Request confirmed successfully"})
+    }catch(error){
+        console.log("Il y a une erreue",error)
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message:"Internal server error"})
     }
 }
