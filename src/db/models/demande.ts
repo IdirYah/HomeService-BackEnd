@@ -11,6 +11,7 @@ const demandeSchema = new Schema<IDemandeModel>({
     annulation:{type:Boolean,required:true,default:false},
     isConfirmed:{type:Boolean,required:true,default:false},
     isUrgent:{type:Boolean,required:true,default:false},
+    isCompleted:{type:Boolean,required:true,default:false},
     date:{type:String,required:true},
 })
 

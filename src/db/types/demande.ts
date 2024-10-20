@@ -10,5 +10,6 @@ export interface IDemande{
     annulation:boolean;
     isConfirmed:boolean;
     isUrgent:boolean;
+    isCompleted:boolean;
     date:string;
 }

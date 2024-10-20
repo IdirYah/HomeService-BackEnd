@@ -4,6 +4,7 @@ import { StatusCodes } from "http-status-codes";
 import Artisan from "../../db/models/artisan";
 import Client from "../../db/models/client";
 import Demande from "../../db/models/demande";
+import dayjs from "dayjs";
 import bcrypt from "bcrypt"
 
 export const getArtisan = async(req:Request,res:Response):Promise<any>=>{
@@ -122,6 +123,32 @@ export const addDemande = async(req:Request,res:Response):Promise<any>=>{
             }
         })
     }catch(error){
+        console.log("Il y a une erreur",error)
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message:"Internal server error"})
+    }
+}
+
+export const annulerDemande = async(req:Request,res:Response):Promise<any>=>{
+    try {
+        const {idDemande} = req.body
+        if(!idDemande){
+            return res.status(StatusCodes.BAD_REQUEST).json({mesage:"Please enter your credentials"})
+        }
+        const oldDemande = await Demande.findById(idDemande)
+        if(!oldDemande){
+            return res.status(StatusCodes.NOT_FOUND).json({message:"Demande doesn't exists"})
+        }
+        const dateDemande = oldDemande.date
+        const currentDate = dayjs()
+        const dateDemandeObjet = dayjs(dateDemande)
+        const hoursDifference = dateDemandeObjet.diff(currentDate,'hour')
+        if(hoursDifference<=24){
+            return res.status(StatusCodes.BAD_REQUEST).json({message:"You can only cancel the request 24 hours before the appointment"})
+        }
+        oldDemande.annulation = true
+        await oldDemande.save()
+        res.status(StatusCodes.OK).json({message:"Request canceled successfully"})
+    } catch(error){
         console.log("Il y a une erreur",error)
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message:"Internal server error"})
     }
