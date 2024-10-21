@@ -233,3 +233,28 @@ export const getRDV = async(req:Request,res:Response):Promise<any>=>{
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message:"Internal server error"})
     }
 }
+
+export const completedRDV = async(req:Request,res:Response):Promise<any>=>{
+    try{
+        const {idDemande} = req.body
+        if(!idDemande){
+            return res.status(StatusCodes.BAD_REQUEST).json({message:"Please enter your credentials"})
+        }
+        const oldDemande = await Demande.findById(idDemande)
+        if(!oldDemande){
+            return res.status(StatusCodes.NOT_FOUND).json({message:"Demande doesn't exists"})
+        }
+        const now = dayjs()
+        const demandeDate = dayjs(oldDemande.date)
+        const diffHours = now.diff(demandeDate,'hour')
+        if(diffHours>6){
+            return res.status(StatusCodes.BAD_REQUEST).json({message:"You cant't complete your RDV"})
+        }
+        oldDemande.isCompleted = true
+        await oldDemande.save()
+        res.status(StatusCodes.OK).json({message:"RDV completed successfully"})
+    }catch(error){
+        console.log("Il y a une erreur",error)
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message:"Internal server error"})
+    }
+}
