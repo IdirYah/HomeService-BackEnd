@@ -11,5 +11,5 @@ export interface IDemande{
     isConfirmed:boolean;
     isUrgent:boolean;
     isCompleted:boolean;
-    date:string;
+    date:Date;
 }

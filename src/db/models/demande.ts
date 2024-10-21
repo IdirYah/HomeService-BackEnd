@@ -12,7 +12,7 @@ const demandeSchema = new Schema<IDemandeModel>({
     isConfirmed:{type:Boolean,required:true,default:false},
     isUrgent:{type:Boolean,required:true,default:false},
     isCompleted:{type:Boolean,required:true,default:false},
-    date:{type:String,required:true},
+    date:{type:Date,required:true},
 })
 
 export default model<IDemandeModel>("Demande",demandeSchema)

@@ -1,5 +1,5 @@
 import express from "express";
-import { updateArtisan,updatePassword,addPrestation,getDemande,confirmDemande } from "../controllers/artisanController";
+import { updateArtisan,updatePassword,addPrestation,getDemande,confirmDemande,getRDV } from "../controllers/artisanController";
 import authArtisan from "../middleware/authArtisan"
 
 const artisanRoutes = express.Router()
@@ -9,5 +9,6 @@ artisanRoutes.put("/updateArtisanPassword",authArtisan,updatePassword)
 artisanRoutes.put("/addPrestation",authArtisan,addPrestation)
 artisanRoutes.get("/getDemande",authArtisan,getDemande)
 artisanRoutes.put("/confirmDemande",authArtisan,confirmDemande)
+artisanRoutes.get("/getRDV",authArtisan,getRDV)
 
 export default artisanRoutes

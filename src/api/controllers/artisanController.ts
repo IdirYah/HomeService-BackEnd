@@ -114,7 +114,7 @@ export const getDemande = async(req:Request,res:Response):Promise<any>=>{
         const currentDate = new Date()
         const demandes = await Demande.find({
             idArtisan: idArtisanObjet,
-            date: { $gt: currentDate }, 
+            date: { $gte: currentDate }, 
             annulation: false, 
             isConfirmed: false, 
             isCompleted: false 
@@ -172,6 +172,64 @@ export const confirmDemande = async(req:Request,res:Response):Promise<any>=>{
         res.status(StatusCodes.OK).json({message:"Request confirmed successfully"})
     }catch(error){
         console.log("Il y a une erreue",error)
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message:"Internal server error"})
+    }
+}
+
+export const getRDV = async(req:Request,res:Response):Promise<any>=>{
+    try{
+        const idArtisan:string = req.artisan?.idArtisan as string
+        if(!idArtisan){
+            return res.status(StatusCodes.NOT_FOUND).json({message:"Artisan doesn't exists"})
+        }
+        const idArtisanObjet = new mongoose.Types.ObjectId(idArtisan)
+        if(!idArtisanObjet){
+            return res.status(StatusCodes.NOT_FOUND).json({message:"Artisan doesn't exists"})
+        }
+        const now = new Date(); 
+        const next24Hours = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+        const RDV = await Demande.find({
+            idArtisan:idArtisanObjet,
+            isConfirmed:true,
+            date:{
+                $gte: now, 
+                $lt: next24Hours
+            }
+        });
+        if(RDV.length === 0){
+            return res.status(StatusCodes.NOT_FOUND).json({message:"No RDV for this artisan"})
+        }
+        const RDVModifiees = await Promise.all(
+            RDV.map(async (rdv) => {
+                try {
+                    const client = await Client.findById(rdv.idClient); 
+                    if (!client) {
+                        return {
+                            message:"Client inconnu",
+                        };
+                    }
+
+                    return {
+                        nomClient: client.nom,
+                        prenomClient: client.prenom, 
+                        titre:rdv.titre,
+                        description:rdv.description,
+                        annulation:rdv.annulation,
+                        isConfirmed:rdv.isConfirmed,
+                        isUrgent:rdv.isUrgent,
+                        date:rdv.date
+                    };
+                } catch (error) {
+                    console.log(`Erreur lors de la récupération du client pour le rdv ${rdv._id}`, error);
+                    return {
+                        message: "Erreur client", 
+                    };
+                }
+            })
+        );
+        res.status(StatusCodes.OK).json(RDVModifiees)
+    }catch(error){
+        console.log("Il y a une erreur",error)
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message:"Internal server error"})
     }
 }
