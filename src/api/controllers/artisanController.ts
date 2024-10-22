@@ -244,10 +244,11 @@ export const completedRDV = async(req:Request,res:Response):Promise<any>=>{
         if(!oldDemande){
             return res.status(StatusCodes.NOT_FOUND).json({message:"Demande doesn't exists"})
         }
-        const now = dayjs()
-        const demandeDate = dayjs(oldDemande.date)
-        const diffHours = now.diff(demandeDate,'hour')
-        if(diffHours>6){
+        const now = new Date();
+        const demandeDate = new Date(oldDemande.date); 
+        const diffMs = now.getTime() - demandeDate.getTime(); 
+        const diffHours = diffMs / (1000 * 60 * 60); 
+        if(diffHours>20 || diffHours<=0){
             return res.status(StatusCodes.BAD_REQUEST).json({message:"You cant't complete your RDV"})
         }
         oldDemande.isCompleted = true
