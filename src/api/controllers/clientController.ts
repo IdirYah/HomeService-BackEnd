@@ -153,3 +153,56 @@ export const annulerDemande = async(req:Request,res:Response):Promise<any>=>{
         res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message:"Internal server error"})
     }
 }
+
+export const getConfimedDemande = async(req:Request,res:Response):Promise<any>=>{
+    try{
+        const idClient:string = req.user?.idClient as string
+        if(!idClient){
+            return res.status(StatusCodes.NOT_FOUND).json({message:"Client doesn't exists"})
+        }
+        const idClientObjet = new mongoose.Types.ObjectId(idClient)
+        if(!idClientObjet){
+            return res.status(StatusCodes.NOT_FOUND).json({message:"Client doesn't exists"})
+        }
+        const now = new Date(); 
+        const RDV = await Demande.find({
+            idClient:idClientObjet,
+            isConfirmed:true,
+            date:{
+                $gte: now
+            }
+        });
+        if(RDV.length === 0){
+            return res.status(StatusCodes.NOT_FOUND).json({message:"No RDV for this client"})
+        }
+        const RDVModifiees = await Promise.all(
+            RDV.map(async (rdv) => {
+                try {
+                    const artisan = await Artisan.findById(rdv.idArtisan); 
+                    if (!artisan) {
+                        return {
+                            message:"Artisan inconnu",
+                        };
+                    }
+                    return {
+                        nomArtisan: artisan.nom,
+                        prenomArtisan: artisan.prenom, 
+                        telArtisan: artisan.tel,
+                        titre:rdv.titre,
+                        description:rdv.description,
+                        date:rdv.date
+                    };
+                } catch (error) {
+                    console.log(`Erreur lors de la récupération de l'artisan pour le rdv ${rdv._id}`, error);
+                    return {
+                        message: "Erreur artisan", 
+                    };
+                }
+            })
+        );
+        res.status(StatusCodes.OK).json(RDVModifiees)
+    }catch(error){
+        console.log("Il y a une erreur",error)
+        res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({message:"Internal server error"})
+    }
+}
